@@ -4,8 +4,12 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
-import sys 
-sys.path.append('/home/lyh/Seafile/MEGAsync/Projects/TwoSample_KDCA/Code/Final/appendix_code/')
+import os
+
+# Get the directory where the current script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+os.chdir(script_dir)
 
 from functions import *
 

@@ -1,6 +1,11 @@
 # %%
-import sys 
-sys.path.append('/home/lyh/Seafile/MEGAsync/Projects/TwoSample_KDCA/Code/Final/application/')
+import os
+
+# Get the directory where the current script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+os.chdir(script_dir)
+
 
 from functions import *
 
@@ -11,8 +16,9 @@ from scipy.sparse.linalg import eigsh
 from scipy.stats import multivariate_normal
 import time
 #%%
-inputs = pd.read_csv('/home/lyh/Seafile/MEGAsync/Projects/TwoSample_KDCA/Code/Final/application/chin/chin_inputs.csv')
-outputs = pd.read_csv('/home/lyh/Seafile/MEGAsync/Projects/TwoSample_KDCA/Code/Final/application/chin/chin_outputs.csv')
+
+inputs = pd.read_csv(os.path.join(script_dir, 'chin/chin_inputs.csv'))
+outputs = pd.read_csv(os.path.join(script_dir, 'chin/chin_outputs.csv'))
 
 X = inputs[outputs.values.flatten() == 1.0].reset_index(drop=True)
 Y = inputs[outputs.values.flatten() == 2.0].reset_index(drop=True)
@@ -41,8 +47,8 @@ print(f"p-value for mmd is {mmd(X, Y, Nb=500)}")
 end_time = time.time()
 print(f"Time taken for mmd: {end_time - start_time} seconds")
 # %%
-inputs = pd.read_csv('/home/lyh/Seafile/MEGAsync/Projects/TwoSample_KDCA/Code/Final/application/khan/khan_inputs.csv')
-outputs = pd.read_csv('/home/lyh/Seafile/MEGAsync/Projects/TwoSample_KDCA/Code/Final/application/khan/khan_outputs.csv')
+inputs = pd.read_csv(os.path.join(script_dir, 'khan/khan_inputs.csv'))
+outputs = pd.read_csv(os.path.join(script_dir, 'khan/khan_outputs.csv'))
 
 X = inputs[outputs.values.flatten() == 2.0].reset_index(drop=True)
 Y = inputs[outputs.values.flatten() == 4.0].reset_index(drop=True)
@@ -67,8 +73,8 @@ print(f"p-value for mmd is {mmd(X, Y, Nb=500)}")
 end_time = time.time()
 print(f"Time taken for mmd: {end_time - start_time} seconds")
 # %%
-inputs = pd.read_csv('/home/lyh/Seafile/MEGAsync/Projects/TwoSample_KDCA/Code/Final/application/gordon/gordon_inputs.csv')
-outputs = pd.read_csv('/home/lyh/Seafile/MEGAsync/Projects/TwoSample_KDCA/Code/Final/application/gordon/gordon_outputs.csv')
+inputs = pd.read_csv(os.path.join(script_dir, 'gordon/gordon_inputs.csv'))
+outputs = pd.read_csv(os.path.join(script_dir, 'gordon/gordon_outputs.csv'))
 
 X = inputs[outputs.values.flatten() == 1.0].reset_index(drop=True)
 Y = inputs[outputs.values.flatten() == 2.0].reset_index(drop=True)

@@ -4,8 +4,16 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
-import sys 
-sys.path.append('/home/lyh/Seafile/MEGAsync/Projects/TwoSample_KDCA/Code/Final/DGPs/')
+import os
+
+# Get the directory where the current script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct path to DGPs by going up one level from current script's location
+dgp_path = os.path.join(os.path.dirname(script_dir), 'DGPs')
+
+# Change directory
+os.chdir(dgp_path)
 
 from dgp_alternative_set1_2 import *
 from dgp_alternative_set3 import *
