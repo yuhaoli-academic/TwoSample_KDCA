@@ -1,0 +1,18 @@
+[project]
+name = "sci-computing"
+version = "0.1.0"
+description = "Virtual Environment for Scientific Computing"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "dowhy>=0.11.1",
+    "ipykernel>=6.29.5",
+    "joblib>=1.5.1",
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10.3",
+    "numpy>=2.3.1",
+    "pandas>=2.3.1",
+    "scikit-learn>=1.7.0",
+    "scipy>=1.16.0",
+    "statsmodels>=0.14.5",
+]
