@@ -5,7 +5,6 @@ description = "Virtual Environment for Scientific Computing"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "dowhy>=0.11.1",
     "ipykernel>=6.29.5",
     "joblib>=1.5.1",
     "jupyter>=1.1.1",
