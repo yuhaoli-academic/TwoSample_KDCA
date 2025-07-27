@@ -8,12 +8,12 @@ import os
 
 # Get the directory where the current script is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
-# Specify the child folder name
-child_folder = "DGPs"  # replace with your folder name
 
-# Join paths and change directory
-child_path = os.path.join(script_dir, child_folder)
-os.chdir(child_path)
+# Construct path to DGPs by going up one level from current script's location
+dgp_path = os.path.join(os.path.dirname(script_dir), 'DGPs')
+
+# Change directory
+os.chdir(dgp_path)
 
 
 from dgp_alternative_set1_2 import *
