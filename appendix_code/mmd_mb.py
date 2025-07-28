@@ -1,30 +1,30 @@
 # %%
-def warn(*args, **kwargs):
-    pass
-import warnings
-warnings.warn = warn
-
-import os
+import sys
+from pathlib import Path
 
 # Get the directory where the current script is located
-script_dir = os.path.dirname(os.path.abspath(__file__))
+script_dir = Path(__file__).parent.absolute()
 
-# Construct path to DGPs by going up one level from current script's location
-dgp_path = os.path.join(os.path.dirname(script_dir), 'DGPs')
+# Go up one level from script_dir, then into 'DGPs'
+dgp_path = script_dir.parent / 'DGPs'
 
-# Change directory
-os.chdir(dgp_path)
+# Check if the directory exists
+if not dgp_path.exists() or not dgp_path.is_dir():
+    raise FileNotFoundError(f"DGPs directory not found: {dgp_path}")
+
+# Add the DGPs directory to Python's module search path
+sys.path.insert(0, str(dgp_path))
 
 
+
+# Now these imports will work
 from dgp_alternative_set1_2 import *
 from dgp_alternative_set3 import *
 from dgp_alternative_set4 import *
-
 from dgp_null import *
 
 import numpy as np 
 from scipy.spatial.distance import cdist,pdist
-from scipy.sparse.linalg import eigsh
 from joblib import Parallel, delayed
 from scipy.stats import multivariate_normal
 

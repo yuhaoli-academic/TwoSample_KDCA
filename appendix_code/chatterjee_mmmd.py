@@ -1,15 +1,12 @@
 # %%
-def warn(*args, **kwargs):
-    pass
-import warnings
-warnings.warn = warn
+import sys
+from pathlib import Path
 
-import os
+# Get the directory of the current script
+script_dir = Path(__file__).parent.absolute()
 
-# Get the directory where the current script is located
-script_dir = os.path.dirname(os.path.abspath(__file__))
-
-os.chdir(script_dir)
+# Add the script's directory to Python's module search path
+sys.path.insert(0, str(script_dir))
 
 from functions import *
 

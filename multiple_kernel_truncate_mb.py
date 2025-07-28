@@ -1,25 +1,27 @@
 # %%
-def warn(*args, **kwargs):
-    pass
-import warnings
-warnings.warn = warn
-
-import os
+import sys
+from pathlib import Path
 
 # Get the directory where the current script is located
-script_dir = os.path.dirname(os.path.abspath(__file__))
+script_dir = Path(__file__).parent.absolute()
+
 # Specify the child folder name
-child_folder = "DGPs"  # replace with your folder name
+child_folder = "DGPs"
 
-# Join paths and change directory
-child_path = os.path.join(script_dir, child_folder)
-os.chdir(child_path)
+# Full path to the DGPs folder
+child_path = script_dir / child_folder
 
+# Check if the directory exists
+if not child_path.exists():
+    raise FileNotFoundError(f"Directory not found: {child_path}")
 
+# Add the DGPs directory to Python's module search path
+sys.path.insert(0, str(child_path))
+
+# Now import the modules
 from dgp_alternative_set1_2 import *
 from dgp_alternative_set3 import *
 from dgp_alternative_set4 import *
-
 from dgp_null import *
 
 import numpy as np 

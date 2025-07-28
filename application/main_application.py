@@ -1,10 +1,14 @@
 # %%
-import os
+import sys
+from pathlib import Path
 
 # Get the directory where the current script is located
-script_dir = os.path.dirname(os.path.abspath(__file__))
+script_dir = Path(__file__).parent.absolute()
 
-os.chdir(script_dir)
+# Add the script's directory to Python's module search path
+sys.path.insert(0, str(script_dir))
+
+
 
 
 from functions import *
@@ -17,8 +21,9 @@ from scipy.stats import multivariate_normal
 import time
 #%%
 
-inputs = pd.read_csv(os.path.join(script_dir, 'chin/chin_inputs.csv'))
-outputs = pd.read_csv(os.path.join(script_dir, 'chin/chin_outputs.csv'))
+data_folder = script_dir / 'chin'
+inputs = pd.read_csv(data_folder / 'chin_inputs.csv')
+outputs = pd.read_csv(data_folder / 'chin_outputs.csv')
 
 X = inputs[outputs.values.flatten() == 1.0].reset_index(drop=True)
 Y = inputs[outputs.values.flatten() == 2.0].reset_index(drop=True)
@@ -47,8 +52,10 @@ print(f"p-value for mmd is {mmd(X, Y, Nb=500)}")
 end_time = time.time()
 print(f"Time taken for mmd: {end_time - start_time} seconds")
 # %%
-inputs = pd.read_csv(os.path.join(script_dir, 'khan/khan_inputs.csv'))
-outputs = pd.read_csv(os.path.join(script_dir, 'khan/khan_outputs.csv'))
+
+data_folder = script_dir / 'khan'
+inputs = pd.read_csv(data_folder / 'khan_inputs.csv')
+outputs = pd.read_csv(data_folder / 'khan_outputs.csv')
 
 X = inputs[outputs.values.flatten() == 2.0].reset_index(drop=True)
 Y = inputs[outputs.values.flatten() == 4.0].reset_index(drop=True)
@@ -73,8 +80,9 @@ print(f"p-value for mmd is {mmd(X, Y, Nb=500)}")
 end_time = time.time()
 print(f"Time taken for mmd: {end_time - start_time} seconds")
 # %%
-inputs = pd.read_csv(os.path.join(script_dir, 'gordon/gordon_inputs.csv'))
-outputs = pd.read_csv(os.path.join(script_dir, 'gordon/gordon_outputs.csv'))
+data_folder = script_dir / 'gordon'
+inputs = pd.read_csv(data_folder / 'gordon_inputs.csv')
+outputs = pd.read_csv(data_folder / 'gordon_outputs.csv')
 
 X = inputs[outputs.values.flatten() == 1.0].reset_index(drop=True)
 Y = inputs[outputs.values.flatten() == 2.0].reset_index(drop=True)
