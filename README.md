@@ -1,6 +1,6 @@
 # TwoSample_KDCA
 
-This repository contains replication code for the paper "Kernel Two Sample Testing via Directional Components Analysis".
+This repository contains replication code for the paper "[Kernel Two Sample Testing via Directional Components Analysis](https://arxiv.org/abs/2508.08564)".
 
 ## Dependencies
 
