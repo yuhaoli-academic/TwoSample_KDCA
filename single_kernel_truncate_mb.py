@@ -100,15 +100,15 @@ def truncate(dgp_number,mm,nn,dd,loc,scale,df, dgp_set, Nrep, Nb,j):
         if m>=n:
             # Center K_XX
             C = np.eye(m) - np.ones((m, m)) / m
-            K_centered = C @ K_XX_from_K_j @C
+            K_centered = (C @ K_XX_from_K_j @C)/m
         else:
             # Center K_YY
             C = np.eye(n) - np.ones((n, n)) / n
-            K_centered = C @ K_YY_from_K_j @ C
-            
+            K_centered = (C @ K_YY_from_K_j @ C)/n
+
 
         
-        K_centered = K_centered / m
+        
 
         mu = np.zeros(K_centered.shape[0])
         Sigma = (1 / (p_hat * (1 - p_hat))) * np.eye(K_centered.shape[0])
@@ -138,7 +138,7 @@ mm = 100
 N = nn+mm
 dd_candidates = [50,100, 500,1000]
 
-jj = int(0.01*N)
+jj = int(1)
 
 # %%
 print("truncate")
