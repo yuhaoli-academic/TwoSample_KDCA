@@ -59,6 +59,10 @@ def mmd(dgp_number,mm,nn,dd,loc,scale,df, dgp_set, Nrep, Nb):
         K_XX = np.exp(-cdist(X, X, metric='euclidean') ** 2 / sigma)
         K_YY = np.exp(-cdist(Y, Y, metric='euclidean') ** 2 / sigma)
         K_XY = np.exp(-cdist(X, Y, metric='euclidean') ** 2 / sigma)
+        K_YX = K_XY.T
+
+        K = np.block([[K_XX, K_XY],
+                [K_YX, K_YY]])
 
         k_X_non_diag = K_XX[np.triu_indices_from(K_XX, k=1)]
         k_Y_non_diag = K_YY[np.triu_indices_from(K_YY, k=1)]
@@ -73,13 +77,12 @@ def mmd(dgp_number,mm,nn,dd,loc,scale,df, dgp_set, Nrep, Nb):
 
         stat_kerb = np.zeros(Nb)
         for b in range(Nb):
-            idx = np.random.permutation(m + n)
-            Xb = Z[idx[:m], :]
-            Yb = Z[idx[m:], :]
+            perm = np.random.permutation(m + n)
+            K_b = K[perm][:, perm]
 
-            K_XXb = np.exp(-cdist(Xb, Xb, metric='euclidean') ** 2 / sigma)
-            K_YYb = np.exp(-cdist(Yb, Yb, metric='euclidean') ** 2 / sigma)
-            K_XYb = np.exp(-cdist(Xb, Yb, metric='euclidean') ** 2 / sigma)
+            K_XXb = K_b[:m, :m]
+            K_YYb = K_b[m:, m:]
+            K_XYb = K_b[:m, m:]
 
             k_X_non_diag_b = K_XXb[np.triu_indices_from(K_XXb, k=1)]
             k_Y_non_diag_b = K_YYb[np.triu_indices_from(K_YYb, k=1)]
