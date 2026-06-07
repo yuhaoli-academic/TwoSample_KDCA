@@ -1,0 +1,28 @@
+[workspace]
+channels = ["https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge",
+    "https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main",
+    "conda-forge","nvidia"
+]
+name = "sci-compute"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = ">=3.14.5,<3.15"
+ipykernel = ">=7.2.0,<8"
+joblib = ">=1.5.3,<2"
+matplotlib = ">=3.10.9,<4"
+numpy = ">=2.4.6,<3"
+numba = ">=0.65.1,<0.66"
+pandas = ">=3.0.3,<4"
+scikit-learn = ">=1.9.0,<2"
+scipy = ">=1.17.1,<2"
+statsmodels = ">=0.14.6,<0.15"
+jupyter = ">=1.1.1,<2"
+seaborn = ">=0.13.2,<0.14"
+openpyxl = ">=3.1.5,<4"
+openblas = ">=0.3.33,<0.4"
+jax = ">=0.9.2,<0.10"
+
