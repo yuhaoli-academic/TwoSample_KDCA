@@ -4,7 +4,7 @@ This repository contains replication code for the paper "[Kernel Two Sample Test
 
 ## Dependencies
 
-We use [pixi](https://github.com/astral-sh/uv) to manage Python dependencies. To set up the environment, copy both `pixi.toml` and `pixi.lock` files and use them to synchronize package requirements.
+We use [pixi](https://pixi.prefix.dev/latest/) to manage Python dependencies. To set up the environment, copy both `pixi.toml` and `pixi.lock` files and use them to synchronize package requirements.
 
 ## Code Structure
 
