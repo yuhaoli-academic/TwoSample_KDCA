@@ -1,0 +1,181 @@
+# %%
+import sys
+from pathlib import Path
+
+# Get the directory where the current script is located
+script_dir = Path(__file__).parent.absolute()
+
+# Specify the child folder name
+child_folder = "DGPs"
+
+# Full path to the DGPs folder
+child_path = script_dir / child_folder
+
+# Check if the directory exists
+if not child_path.exists():
+    raise FileNotFoundError(f"Directory not found: {child_path}")
+
+# Add the DGPs directory to Python's module search path
+sys.path.insert(0, str(child_path))
+
+# Now import the modules
+from dgp_alternative_set1_2 import *
+from dgp_alternative_set3 import *
+from dgp_alternative_set4 import *
+from dgp_null import *
+from functions import *
+
+import numpy as np
+from scipy.sparse.linalg import eigsh
+from joblib import Parallel, delayed
+from sklearn.model_selection import train_test_split
+# %%
+
+def truncate(dgp_number,mm,nn,dd,loc,scale,df, dgp_set, Nrep, Nb,j):
+    def process_ss(ss):
+        if dgp_set == 0:
+            data_dgp = dgp_choose(dgp_number, mm,nn,dd)
+        elif dgp_set == 1:
+            data_dgp = dgp_choose_set1_2(mm,nn,dd,loc,scale)
+        elif dgp_set == 2:
+            data_dgp = dgp_choose_set1_2(mm,nn,dd,loc,scale)
+        elif dgp_set == 3:
+            data_dgp = dgp_choose_set3(mm,nn,dd,df)
+        elif dgp_set == 4:
+            data_dgp = dgp_choose_set4(mm,nn,dd,loc,scale)
+
+
+        Y = data_dgp[0]
+        X = data_dgp[1]
+        p_hat = X.shape[0] / (X.shape[0] + Y.shape[0])
+        # Split data
+        X_train, X_test = train_test_split(X, test_size=0.5, random_state=94)
+        Y_train, Y_test = train_test_split(Y, test_size=0.5, random_state=94)
+
+        m = X_test.shape[0]
+        n = Y_test.shape[0]
+  
+
+        sigma,flag = kernel_selection(X_train, Y_train, p_hat, j)
+
+        if flag == 'gaussian':
+            K = full_matrix_gaussian(X_test,Y_test,sigma)
+        elif flag == 'laplacian':
+            K = full_matrix_laplacian(X_test,Y_test,sigma)
+        elif flag == 'imq':
+            K = full_matrix_imq(X_test,Y_test,sigma)
+
+        
+
+        
+
+        eigen_val,eigen_vec = eigsh(K, k=j, which='LM')  # Get the first j eigenvectors and eigenvalues
+
+
+        K_j = eigen_vec @ np.diag(eigen_val) @ eigen_vec.T
+
+        # Select K_XX from K_j
+        K_XX_from_K_j = K_j[:m, :m]
+
+        # Select K_YY from K_j
+        K_YY_from_K_j = K_j[m:, m:]
+
+        # Select K_XY from K_j
+        K_XY_from_K_j = K_j[:m, m:]
+
+
+        k_X_non_diag = K_XX_from_K_j[np.triu_indices_from(K_XX_from_K_j, k=1)]
+        k_Y_non_diag = K_YY_from_K_j[np.triu_indices_from(K_YY_from_K_j, k=1)]
+        k_XY_flat = K_XY_from_K_j.flatten()
+
+        stat_ker =(m+n)*( np.mean(k_X_non_diag) + np.mean(k_Y_non_diag) - 2 * np.mean(k_XY_flat))
+
+
+        
+        # Bootstrap loop
+        if m>=n:
+            # Center K_XX
+            C = np.eye(m) - np.ones((m, m)) / m
+            K_centered = (C @ K_XX_from_K_j @C)/m
+        else:
+            # Center K_YY
+            C = np.eye(n) - np.ones((n, n)) / n
+            K_centered = (C @ K_YY_from_K_j @ C)/n
+
+
+
+        stat_kerb=bootstrap_vec(K_centered, p_hat, Nb)
+
+        
+
+        # P-value computation
+        pvalue_ker = np.mean(stat_ker < stat_kerb)
+        return (pvalue_ker < 0.1, pvalue_ker < 0.05, pvalue_ker < 0.01)
+
+    # Parallel processing
+    results = Parallel(n_jobs=-1)(delayed(process_ss)(ss) for ss in range(Nrep))
+
+    # Unpack results
+    rej_90, rej_95, rej_99 = zip(*results)
+
+    return np.mean(rej_90).item(), np.mean(rej_95).item(), np.mean(rej_99).item()
+
+
+# %%
+
+nn = 100
+mm = 100
+N = nn+mm
+dd_candidates = [50,100, 500,1000]
+
+jj = int(1)
+
+# %%
+print("truncate")
+print("Set 0, Null Distribution")
+dgp_candidates = [1, 2, 3, 4]
+for dgp in dgp_candidates:
+    print(f"dgp={dgp}:")
+    for dd in dd_candidates:
+        print(f"dd={dd}:", truncate(dgp_number=dgp,mm=mm, nn=nn, dd=dd, loc=0.0, scale=1.0, df=3, dgp_set=0, Nrep=1000, Nb=500, j=jj))
+    print("\n")
+#%%
+print("Set 1, Location-Scale Deviation")
+loc_scale_candidates = [(0.05, 0.5), (0.1, 1.3), (-0.05, 0.6)]
+for loc, scale in loc_scale_candidates:
+    print(f"loc={loc}, scale={scale}:")
+    for dd in dd_candidates:
+        print(f"dd={dd}:", truncate(dgp_number=1,mm=mm, nn=nn, dd=dd, loc=loc, scale=scale, df=3, dgp_set=1, Nrep=1000, Nb=500, j=jj))
+    print("\n")
+
+
+
+
+# %%
+print("Set 2, T-distribution")
+df_candidates = [3, 5, 10]
+for df in df_candidates:
+    print(f"df={df}:")
+    for dd in dd_candidates:
+        print(f"dd={dd}:", truncate(dgp_number=1,mm=mm, nn=nn, dd=dd, loc=0.0, scale=1.0, df=df, dgp_set=3, Nrep=1000, Nb=500, j=jj))
+    print("\n")
+
+# %%
+print("Set 3, Mixed Distribution")
+loc_scale_candidates = [(-0.05, 0.85), (0.0, 1.1), (0.05, 1.05)]
+for loc, scale in loc_scale_candidates:
+    print(f"loc={loc}, scale={scale}:")
+    for dd in dd_candidates:
+        print(f"dd={dd}:", truncate(dgp_number=1,mm=mm, nn=nn, dd=dd, loc=loc, scale=scale, df=3, dgp_set=4, Nrep=1000, Nb=500, j=jj))
+    print("\n")
+
+# %%
+print("Set 4, Scale-Only Deviation")
+scale_candidates = [0.6, 0.8, 1.3]
+for scale in scale_candidates:
+    print(f"scale={scale}:")
+    for dd in dd_candidates:
+        print(f"dd={dd}:", truncate(dgp_number=1,mm=mm, nn=nn, dd=dd, loc=0.0, scale=scale, df=3, dgp_set=1, Nrep=1000, Nb=500, j=jj))
+    print("\n")
+
+# %%
